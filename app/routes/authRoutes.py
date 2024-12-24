@@ -1,8 +1,16 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import (
+    create_access_token,
+    create_refresh_token,
+    get_jwt_identity,
+    jwt_required,
+    get_jwt
+)
+from datetime import timedelta
 
 auth_bp = Blueprint('auth', __name__)
 
+# Base de datos de usuarios simulada
 USERS = {
     "test": {
         "password": "test",
@@ -10,6 +18,10 @@ USERS = {
         "rol": "admin"
     }
 }
+
+# Configuración de tiempos de expiración
+ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)
+REFRESH_TOKEN_EXPIRES = timedelta(days=7)
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
@@ -23,6 +35,18 @@ def login():
     if not user or user['password'] != password:
         return jsonify({"error": "Credenciales inválidas"}), 401
 
-    additional_claims = {"rol": user['rol']}
-    access_token = create_access_token(username, additional_claims=additional_claims)
-    return jsonify(access_token=access_token)
+    # Crear tokens
+    additional_claims = {"id_usuario": user['id_usuario'], "rol": user['rol']}
+    access_token = create_access_token(identity=username, additional_claims=additional_claims, expires_delta=ACCESS_TOKEN_EXPIRES)
+    refresh_token = create_refresh_token(identity=username, expires_delta=REFRESH_TOKEN_EXPIRES)
+
+    return jsonify(access_token=access_token, refresh_token=refresh_token), 200
+
+# Endpoint para la renovación del JWT
+@auth_bp.route('/refresh_token', methods=['POST'])
+@jwt_required(refresh=True)  # Verifica que el token sea un refresh token válido
+def refresh_token():
+    current_user = get_jwt_identity()
+    claims = {"rol": get_jwt()["rol"]}
+    new_access_token = create_access_token(identity=current_user, additional_claims=claims, expires_delta=ACCESS_TOKEN_EXPIRES)
+    return jsonify(access_token=new_access_token), 200
