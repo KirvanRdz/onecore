@@ -44,9 +44,15 @@ def login():
 
 # Endpoint para la renovación del JWT
 @auth_bp.route('/refresh_token', methods=['POST'])
-@jwt_required(refresh=True)  # Verifica que el token sea un refresh token válido
+@jwt_required(refresh=True)  # Asegura que se use un refresh_token válido
 def refresh_token():
     current_user = get_jwt_identity()
-    claims = {"rol": get_jwt()["rol"]}
+    # Extraer el rol del usuario desde la base de datos o un almacenamiento confiable
+    user = USERS.get(current_user)
+    if not user:
+        return jsonify({"error": "Usuario no encontrado"}), 404
+
+    # Crear un nuevo access_token con las claims necesarias
+    claims = {"rol": user["rol"]}
     new_access_token = create_access_token(identity=current_user, additional_claims=claims, expires_delta=ACCESS_TOKEN_EXPIRES)
     return jsonify(access_token=new_access_token), 200
