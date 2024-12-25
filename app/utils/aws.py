@@ -9,3 +9,13 @@ def upload_to_s3(file, filename):
         region_name=Config.AWS_REGION
     )
     s3_client.upload_fileobj(file, Config.BUCKET_NAME, filename)
+
+def textract_aws():
+    return boto3.client(
+        'textract',
+        aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY,
+        region_name=Config.AWS_REGION
+    )
+     
+

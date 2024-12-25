@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Analysis</title>
+</head>
+<body>
+    <h1>Document Analysis</h1>
+    <form action="/api/documents" method="post" enctype="multipart/form-data">
+        <label for="file">Upload Document:</label>
+        <input type="file" name="file" id="file" required>
+        <button type="submit">Analyze</button>
+    </form>
+
+    {% if classification %}
+        <h2>Analysis Results</h2>
+        <p><strong>Classification:</strong> {{ classification }}</p>
+        <h3>Extracted Data:</h3>
+        <pre>{{ extracted_data | tojson(indent=2) }}</pre>
+    {% endif %}
+</body>
+</html>
+
