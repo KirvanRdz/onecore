@@ -8,6 +8,7 @@ from flask_jwt_extended import (
 )
 from datetime import timedelta
 from config import Config
+from app.service.api.authService import create_tokens
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -25,9 +26,8 @@ def login():
     
     # Crear tokens
     additional_claims = {"id_usuario": 1, "rol": 'admin'}
-    access_token = create_access_token(identity=username, additional_claims=additional_claims, expires_delta=ACCESS_TOKEN_EXPIRES)
-    refresh_token = create_refresh_token(identity=username,additional_claims=additional_claims, expires_delta=REFRESH_TOKEN_EXPIRES)
-
+    access_token, refresh_token=create_tokens(username,additional_claims)
+    
     return jsonify(access_token=access_token, refresh_token=refresh_token), 200
 
 # Endpoint para la renovación del JWT
