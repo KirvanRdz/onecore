@@ -3,16 +3,16 @@ from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
     get_jwt_identity,
-    jwt_required,
-    get_jwt
+    jwt_required
 )
 from datetime import timedelta
+from config import Config
 
 auth_bp = Blueprint('auth', __name__)
 
 # Base de datos de usuarios simulada
 USERS = {
-    "test": {
+    "admin": {
         "password": "test",
         "id_usuario": 1,
         "rol": "admin"
@@ -20,8 +20,8 @@ USERS = {
 }
 
 # Configuración de tiempos de expiración
-ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)
-REFRESH_TOKEN_EXPIRES = timedelta(days=7)
+ACCESS_TOKEN_EXPIRES = timedelta(minutes=Config.JWT_ACCESS_TOKEN_EXPIRES)
+REFRESH_TOKEN_EXPIRES = timedelta(days=Config.JWT_REFRESH_TOKEN_EXPIRES)
 
 @auth_bp.route('/login', methods=['POST'])
 def login():

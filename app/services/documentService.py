@@ -1,19 +1,18 @@
 import json
 import os
 from io import BytesIO
-from pdf2image import convert_from_bytes
 from PIL import Image
-import re
 import google.generativeai as genai
 
 from app.models.documentModel import Document
 from app.utils.aws import textract_aws
 from app.utils.prompts import extract_invoice_items
 from app.extensions import db
+from config import Config
 
 def analyze_document(file):
     """
-    Procesa el documento cargado, clasifica y extrae datos según el tipo utilizando AWS Textract.
+    Procesa el documento cargado, clasifica y extrae datos según el tipo utilizando AWS Textract y GEMINI.
 
     Args:
         file: Archivo cargado (PDF, JPG, PNG).
@@ -26,24 +25,27 @@ def analyze_document(file):
     file_extension = os.path.splitext(file.filename)[-1].lower()
     text_content = ""
 
-    # Convertir PDF a imágenes si es necesario
+
     if file_extension == '.pdf':
-        images = convert_from_bytes(file.read())
-        text_content = extract_text_from_images(images)
+        text_content = extract_text_from_pdf(file)
     elif file_extension in ['.jpg', '.jpeg', '.png']:
         image = Image.open(file)
         text_content = extract_text_from_images([image])
-    else:
-        raise ValueError("Formato no soportado. Use PDF, JPG o PNG.")
-
+    
     # Clasificación del documento
-    if "factura" in text_content.lower() or "total" in text_content.lower():
-        classification = "Factura"
-        extracted_data = extract_invoice_data(text_content)
-    else:
-        classification = "Información"
-        extracted_data = extract_information_data(text_content)
+    extracted_data=document_classification(text_content)
+    
+    if extracted_data["Tipo"]== "Factura":
+            classification = "Factura"
+            extracted_data = extracted_data["Factura"]
+    
+    elif extracted_data["Tipo"]== "Informacion":
+            classification = "Información"
+            extracted_data = extracted_data["Informacion"]
 
+    else:
+        return None, None
+    
     # Guardar en la base de datos
     document = Document(filename=file.filename, classification=classification, extracted_data=extracted_data)
     db.session.add(document)
@@ -60,7 +62,8 @@ def extract_text_from_images(images):
     Returns:
         str: Texto extraído de las imágenes.
     """
-    textract = textract_aws()  #credenciales de AWS configuradas
+    # Inicializa el cliente de Textract
+    textract = textract_aws()
     text_content = ""
 
     for image in images:
@@ -80,43 +83,61 @@ def extract_text_from_images(images):
         for item in response['Blocks']:
             if item['BlockType'] == 'LINE':
                 text_content += item['Text'] + "\n"
-    print(text_content)
+    
     return text_content
 
-def extract_invoice_data(text):
+
+def extract_text_from_pdf(file):
+    
     """
-    Extrae datos de una factura.
+    Extrae texto de un PDF usando AWS Textract.
+
+    Args:
+        file: Archivo PDF cargado.
+
+    Returns:
+        str: Texto extraído del PDF.
+    """
+
+    # Inicializa el cliente de Textract
+    textract = textract_aws()
+   
+    # Lee los bytes del archivo directamente desde el objeto FileStorage
+    pdf_bytes = file.read()
+
+    # Llama a Textract para analizar el documento
+    response = textract.analyze_document(
+        Document={'Bytes': pdf_bytes},
+        FeatureTypes=['TABLES', 'FORMS']  # incluye tablas y formularios si es necesario
+    )
+
+    # Extrae el texto del resultado
+    text = ""
+    for block in response['Blocks']:
+        if block['BlockType'] == 'LINE':  # Cada línea de texto
+            text += block['Text'] + "\n"
+    
+    return text
+
+def document_classification(text):
+    """
+    El LLM clasifica el tipo de documento y devuelve los datos en formato JSON
 
     Args:
         text: Texto extraído del documento.
 
     Returns:
-        dict: Datos extraídos de la factura.
+        dict: Datos extraídos del documento segun la clasificación.
     """
 
-    genai.configure(api_key="AIzaSyD-fOs_ghfTMpNnkkvzmU24d5nkTPRRios")
+    genai.configure(api_key=Config.SECRET_KEY_GEMINI)
     model = genai.GenerativeModel("gemini-1.5-flash", system_instruction=extract_invoice_items)
     response = model.generate_content(text)
-    print(response.text)
+    
     data = parse_llm_response(response.text)
+
     return data
     
-
-def extract_information_data(text):
-    """
-    Extrae datos de un documento de información general.
-
-    Args:
-        text: Texto extraído del documento.
-
-    Returns:
-        dict: Datos extraídos de la información general.
-    """
-    data = {}
-    data['descripcion'] = text[:200]
-    data['resumen'] = "\n".join(text.splitlines()[:5])
-    data['sentimiento'] = analyze_sentiment(text)
-    return data
 
 def parse_llm_response(response_text):
     """
@@ -148,22 +169,3 @@ def parse_llm_response(response_text):
     except ValueError as e:
         print(f"Error: {e}")
     return None
-
-# Ejemplo de uso con salida JSON
-
-def analyze_sentiment(text):
-    """
-    Analiza el sentimiento del texto.
-
-    Args:
-        text: Texto a analizar.
-
-    Returns:
-        str: Sentimiento (Positivo, Negativo o Neutral).
-    """
-    if "bueno" in text.lower() or "excelente" in text.lower():
-        return "Positivo"
-    elif "malo" in text.lower() or "terrible" in text.lower():
-        return "Negativo"
-    else:
-        return "Neutral"

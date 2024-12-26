@@ -25,3 +25,12 @@ def validate_csv(df):
         errors.append(f"Error en tipos de datos: {str(e)}")
     
     return errors
+
+# Extensiones permitidas
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
+
+def allowed_file(filename):
+    """
+    Verifica si el archivo tiene una extensión permitida.
+    """
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
