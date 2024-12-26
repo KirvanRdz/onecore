@@ -40,9 +40,10 @@ Este proyecto es una aplicación web desarrollada en Python utilizando Flask y h
 * Facturas: Se extraen datos como cliente, proveedor, productos, número de factura, fecha y total.
 * Información: Se extraen una descripción, resumen y análisis de sentimiento.
 
-3. Módulo Histórico
+### Módulo Histórico
 
-* Registro de Eventos:
+1. Registro de Eventos:
+
 * Registra eventos como la carga de documentos, interacciones de IA, y acciones del usuario.
 * Funcionalidades de filtrado y exportación de eventos a Excel.
 
@@ -91,4 +92,13 @@ Esto iniciará el servidor de desarrollo en http://127.0.0.1:5000
 - `pytest`
 
 
+## Endpoints para la API
+- POST /api/auth/login: Inicia sesión para usuarios anónimos (requiere username y password).
+- GET /api/auth/refresh_token: Renueva el ACCESS_TOKEN.
+- POST /api/data: Carga un documento .csv, extrae los datos y los guarda en la base de datos.
+
+## URLs para la Pantalla Web
+http://127.0.0.1:5000/documents/: Pantalla para cargar documentos y realizar el análisis.
+
+http://127.0.0.1:5000/logs/: Pantalla para visualizar el registro de eventos.
 
