@@ -1,4 +1,4 @@
-from app.models.dataModel import Data
+from app.models.api.dataModel import Data
 from app.extensions import db
 
 def save_data(df):

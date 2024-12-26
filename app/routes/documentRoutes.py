@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request
-from app.services.documentService import analyze_document
+from app.service.documentService import analyze_document
 from app.utils.validation import allowed_file
-from app.services.logService import log_event
+from app.service.logService import log_event
 
 document_bp = Blueprint('documents', __name__)
 

@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt
 from app.utils.aws import upload_to_s3
 from app.utils.validation import validate_csv
-from app.services.dataServices import save_data
+from app.service.api.dataService import save_data
 import pandas as pd
 import io
 

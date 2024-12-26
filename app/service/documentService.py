@@ -9,7 +9,7 @@ from app.models.documentModel import Document
 from app.utils.aws import textract_aws
 from app.utils.prompts import extract_invoice_items
 from app.extensions import db
-from app.services.logService import log_event
+from app.service.logService import log_event
 
 
 def analyze_document(file):

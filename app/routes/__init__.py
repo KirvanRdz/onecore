@@ -1,5 +1,5 @@
-from app.routes.authRoutes import auth_bp
-from app.routes.dataRoutes import upload_bp
+from app.routes.api.authRoutes import auth_bp
+from app.routes.api.dataRoutes import upload_bp
 from app.routes.documentRoutes import document_bp
 from app.routes.logRoutes import log_bp
 

@@ -2,7 +2,7 @@ from flask import Flask
 from app.extensions import db, jwt, migrate
 from app.routes import register_blueprints
 # Importa los modelos
-from app.models.dataModel import Data
+from app.models.api.dataModel import Data
 from app.models.documentModel import Document
 from app.models.logModel import Log
 
