@@ -1,0 +1,9 @@
+JWT_SECRET_KEY='una clave segura para el token del jwt'
+SQLALCHEMY_DATABASE_URI='mssql+pyodbc://@localhost\\SQLEXPRESS/onecore?driver=ODBC+Driver+17+for+SQL+Server&Trusted_Connection=yes'
+AWS_ACCESS_KEY_ID='tu id de acceso de aws'
+AWS_SECRET_ACCESS_KEY='tu acceso secreto de aws'
+AWS_REGION='us-east-1'
+BUCKET_NAME='nombre del bucket de aws s3'
+SECRET_KEY_GEMINI= 'el secreto de la api de gemini de google'
+JWT_REFRESH_TOKEN_EXPIRES=7
+JWT_ACCESS_TOKEN_EXPIRES=15
