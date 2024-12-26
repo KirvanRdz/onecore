@@ -4,11 +4,13 @@ from io import BytesIO
 from PIL import Image
 import google.generativeai as genai
 
+from config import Config
 from app.models.documentModel import Document
 from app.utils.aws import textract_aws
 from app.utils.prompts import extract_invoice_items
 from app.extensions import db
-from config import Config
+from app.services.logService import log_event
+
 
 def analyze_document(file):
     """
@@ -44,12 +46,14 @@ def analyze_document(file):
             extracted_data = extracted_data["Informacion"]
 
     else:
+        log_event("IA", f"Fallo en el análisis del archivo: {file.filename}")
         return None, None
     
     # Guardar en la base de datos
     document = Document(filename=file.filename, classification=classification, extracted_data=extracted_data)
     db.session.add(document)
     db.session.commit()
+
     return classification, extracted_data
 
 def extract_text_from_images(images):
@@ -84,6 +88,9 @@ def extract_text_from_images(images):
             if item['BlockType'] == 'LINE':
                 text_content += item['Text'] + "\n"
     
+    # Registrar el evento
+    log_event('IA', 'Extrae texto de Imagen con AWS Textract')
+    
     return text_content
 
 
@@ -117,6 +124,8 @@ def extract_text_from_pdf(file):
         if block['BlockType'] == 'LINE':  # Cada línea de texto
             text += block['Text'] + "\n"
     
+    # Registrar el evento
+    log_event('IA', 'Extrae texto de PDF con AWS Textract')
     return text
 
 def document_classification(text):
@@ -135,7 +144,10 @@ def document_classification(text):
     response = model.generate_content(text)
     
     data = parse_llm_response(response.text)
-
+    
+    # Registrar el evento
+    log_event('IA', f'LLM clasifica el documento como {data["Tipo"]}')
+    
     return data
     
 

@@ -3,7 +3,8 @@ from app.extensions import db, jwt, migrate
 from app.routes import register_blueprints
 # Importa los modelos
 from app.models.dataModel import Data
-
+from app.models.documentModel import Document
+from app.models.logModel import Log
 
 def create_app():
     app = Flask(__name__)

@@ -1,0 +1,50 @@
+<!-- app/templates/log_view.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Logs</title>
+</head>
+<body>
+    <h1>Event Logs</h1>
+    <form method="get" action="/logs/">
+        <label for="event_type">Event Type:</label>
+        <input type="text" name="event_type" id="event_type">
+        
+        <label for="description">Description:</label>
+        <input type="text" name="description" id="description">
+        
+        <label for="start_date">Start Date:</label>
+        <input type="date" name="start_date" id="start_date">
+        
+        <label for="end_date">End Date:</label>
+        <input type="date" name="end_date" id="end_date">
+        
+        <button type="submit">Filter</button>
+    </form>
+    <a href="/logs/export/">
+        <button type="button">Export to Excel</button>
+    </a>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.id }}</td>
+                <td>{{ log.event_type }}</td>
+                <td>{{ log.description }}</td>
+                <td>{{ log.timestamp }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

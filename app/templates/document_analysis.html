@@ -7,11 +7,19 @@
 </head>
 <body>
     <h1>Document Analysis</h1>
-    <form action="/api/documents/" method="post" enctype="multipart/form-data">
+    <form action="/documents/" method="post" enctype="multipart/form-data">
         <label for="file">Upload Document:</label>
         <input type="file" name="file" id="file" required>
         <button type="submit">Analyze</button>
     </form>
+
+    <!-- Botón para redirigir a los Logs -->
+    <div style="margin-top: 20px;">
+        <a href="/logs/" style="text-decoration: none;">
+            <button type="button">View Logs</button>
+        </a>
+    </div>
+
     {% if error %}
         <p style="color: red;"><strong>Error:</strong> {{ error }}</p>
     {% endif %}
