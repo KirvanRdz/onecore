@@ -3,7 +3,19 @@ from datetime import timedelta
 from config import Config
 
 def create_tokens(username, user_data):
-    """Genera JWT de acceso y refresh token para el usuario."""
+    """
+    Genera un token de acceso (JWT) y un token de refresco para el usuario.
+
+    Parámetros:
+    - username (str): Nombre de usuario o identidad del usuario para asociar con los tokens.
+    - user_data (dict): Diccionario con información adicional (claims) que se incluirá en los tokens. 
+      Ejemplo: {"id_usuario": int, "rol": str}.
+
+    Retorna:
+    - tuple: Una tupla con dos elementos:
+        - access_token (str): Token de acceso firmado, válido por el tiempo configurado.
+        - refresh_token (str): Token de refresco firmado, válido por el tiempo configurado.
+    """
     access_token = create_access_token(
         identity=username,
         additional_claims=user_data,

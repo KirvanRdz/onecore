@@ -3,9 +3,9 @@ from app.extensions import db
 
 def log_event(event_type, description):
     """
-    Registra un evento en el sistema.
+    Registra un evento y lo guarda en la base de datos.
     
-    Args:
+    Parámetros::
         event_type (str): Tipo de evento (e.g., 'Carga de documento', 'IA', 'Interacción del usuario').
         description (str): Descripción del evento.
     """

@@ -16,10 +16,10 @@ def analyze_document(file):
     """
     Procesa el documento cargado, clasifica y extrae datos según el tipo utilizando AWS Textract y GEMINI.
 
-    Args:
+    Parámetros:
         file: Archivo cargado (PDF, JPG, PNG).
 
-    Returns:
+    Retorna:
         Tuple (classification, extracted_data):
             - classification: "Factura" o "Información".
             - extracted_data: Datos extraídos del documento.
@@ -60,10 +60,10 @@ def extract_text_from_images(images):
     """
     Extrae texto de una lista de imágenes usando AWS Textract.
 
-    Args:
+    Parámetros:
         images: Lista de objetos PIL.Image.
 
-    Returns:
+    Retorna:
         str: Texto extraído de las imágenes.
     """
     # Inicializa el cliente de Textract
@@ -97,15 +97,14 @@ def extract_text_from_images(images):
 def extract_text_from_pdf(file):
     
     """
-    Extrae texto de un PDF usando AWS Textract.
+    Extrae texto de un archivo PDF utilizando AWS Textract.
 
-    Args:
-        file: Archivo PDF cargado.
+    Parámetros:
+    - file (werkzeug.datastructures.FileStorage): Archivo PDF cargado por el usuario.
 
-    Returns:
-        str: Texto extraído del PDF.
+    Retorna:
+    - str: Texto extraído del archivo PDF
     """
-
     # Inicializa el cliente de Textract
     textract = textract_aws()
    
@@ -132,10 +131,10 @@ def document_classification(text):
     """
     El LLM clasifica el tipo de documento y devuelve los datos en formato JSON
 
-    Args:
+    Parámetros:
         text: Texto extraído del documento.
 
-    Returns:
+    Retorna:
         dict: Datos extraídos del documento segun la clasificación.
     """
 
@@ -155,10 +154,10 @@ def parse_llm_response(response_text):
     """
     Convierte la salida JSON del LLM en un diccionario de Python.
 
-    Args:
+    Parámetros:
         response_text (str): La salida del LLM en formato JSON con posibles comillas triples.
 
-    Returns:
+    Retorna:
         dict: Diccionario de Python con los datos extraídos o None si falla.
     """
     try:

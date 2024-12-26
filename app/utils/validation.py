@@ -1,6 +1,15 @@
 import pandas as pd
 
 def validate_csv(df):
+    """
+    Valida un DataFrame cargado desde un archivo CSV para garantizar que cumpla con los requisitos establecidos.
+
+    Parámetros:
+    - df (pandas.DataFrame): El DataFrame que contiene los datos del archivo CSV a validar.
+
+    Retorna:
+    - list: Una lista de errores encontrados durante la validación. Si no se encuentran errores, la lista estará vacía.
+    """
     errors = []
     required_columns = ['Nombre', 'Edad', 'Fecha_nacimiento']
 

@@ -9,6 +9,18 @@ log_bp = Blueprint('logs', __name__)
 
 @log_bp.route('/', methods=['GET'])
 def view_logs():
+    """
+    Renderiza una vista con los registros de eventos filtrados según los parámetros proporcionados.
+
+    Parámetros:
+        - event_type (str, opcional): Tipo de evento a filtrar (parcial o completo).
+        - description (str, opcional): Descripción del evento a filtrar (parcial o completa).
+        - start_date (str, opcional): Fecha de inicio para el rango de filtrado (formato ISO-8601).
+        - end_date (str, opcional): Fecha de fin para el rango de filtrado (formato ISO-8601).
+
+    Retorna:
+        - str: Una plantilla HTML renderizada que muestra los registros de eventos.
+    """
     # Obtener filtros de la solicitud
     event_type = request.args.get('event_type')
     description = request.args.get('description')
@@ -30,6 +42,16 @@ def view_logs():
 
 @log_bp.route('/export/', methods=['GET'])
 def export_logs():
+    """
+    Exporta los registros de eventos en formato Excel.
+
+    Parámetros:
+        - Ninguno.
+
+    Retorna:
+        - Response: Un archivo Excel generado a partir de los registros de eventos, que se descarga como un archivo adjunto con el nombre 'logs.xlsx'.
+    
+    """
     logs = Log.query.all()
     log_data = [log.to_dict() for log in logs]
 

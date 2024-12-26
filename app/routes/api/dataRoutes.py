@@ -6,11 +6,22 @@ from app.service.api.dataService import save_data
 import pandas as pd
 import io
 
-upload_bp = Blueprint('upload', __name__)
+upload_bp = Blueprint('data', __name__)
 
 @upload_bp.route('/', methods=['POST'])
 @jwt_required()
 def upload_file():
+    """
+    Maneja la carga de archivos CSV, validando su contenido, subiéndolo a AWS S3 y almacenando los datos en la base de datos.
+
+    Parámetros:
+        - No requiere parámetros en el cuerpo de la solicitud. El archivo debe ser enviado como parte de un formulario con los campos 'file', 'param1' y 'param2'.
+    
+    Retorna:
+        - Response: Un JSON con un mensaje de éxito si el archivo se procesa correctamente y pasa todas las validaciones.
+        - Error: Si el archivo no cumple con las validaciones, si el usuario no tiene permisos, o si ocurre un error en cualquiera de los pasos (lectura del archivo, subida a S3 o almacenamiento en la base de datos).
+    """
+
     claims = get_jwt()
     
     # Restringir acceso según rol

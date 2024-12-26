@@ -7,6 +7,15 @@ document_bp = Blueprint('documents', __name__)
 
 @document_bp.route('/', methods=['GET', 'POST'])
 def document_analysis():
+    """
+    Analiza y clasifica un documento cargado por el usuario, y extrae datos si es necesario.
+
+    Parámetros:
+        - Ninguno (el archivo se obtiene del formulario de carga 'file' en el request).
+
+    Retorna:
+        - Response: Renderiza una plantilla HTML con los resultados de la clasificación del documento y los datos extraídos, o un mensaje de error si algo sale mal.
+    """
     if request.method == 'POST':
         
         file = request.files.get('file')
